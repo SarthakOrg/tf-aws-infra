@@ -27,3 +27,8 @@ output "private_route_table_id" {
   description = "The ID of the private route table"
   value       = aws_route_table.private.id
 }
+
+output "aws_profile" {
+  description = "The AWS profile being used"
+  value       = var.aws_profile
+}
