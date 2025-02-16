@@ -18,6 +18,11 @@ variable "vpc_name" {
   type        = string
 }
 
+variable "internet_gateway_name" {
+  description = "The name of the Internet Gateway"
+  type        = string
+}
+
 variable "public_subnet_cidrs" {
   description = "A list of CIDR blocks for the public subnets"
   type        = list(string)
