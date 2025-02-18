@@ -1,4 +1,5 @@
 terraform {
+  # Specify the required providers and their versions
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -8,79 +9,42 @@ terraform {
 }
 
 provider "aws" {
+  # Configure the AWS provider with region and profile
   region  = var.aws_region
   profile = var.aws_profile
 }
 
-resource "aws_vpc" "main" {
-  cidr_block = var.vpc_cidr
-
-  tags = {
-    Name = var.vpc_name
-  }
+module "vpc" {
+  # Source the VPC module and pass necessary variables
+  source   = "./resources/vpc"
+  vpc_cidr = var.vpc_cidr
+  vpc_name = var.vpc_name
 }
 
-resource "aws_subnet" "public" {
-  for_each                = { for idx, cidr in var.public_subnet_cidrs : idx => cidr }
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = each.value
-  availability_zone       = element(var.availability_zones, each.key)
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name = "${var.vpc_name}-public-subnet-${each.key}"
-  }
+module "subnet" {
+  # Source the subnet module and pass necessary variables
+  source               = "./resources/subnet"
+  vpc_id               = module.vpc.vpc_id
+  vpc_name             = var.vpc_name
+  public_subnet_cidrs  = var.public_subnet_cidrs
+  private_subnet_cidrs = var.private_subnet_cidrs
+  availability_zones   = var.availability_zones
 }
 
-resource "aws_subnet" "private" {
-  for_each          = { for idx, cidr in var.private_subnet_cidrs : idx => cidr }
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = each.value
-  availability_zone = element(var.availability_zones, each.key)
-
-  tags = {
-    Name = "${var.vpc_name}-private-subnet-${each.key}"
-  }
+module "internet_gateway" {
+  # Source the internet gateway module and pass necessary variables
+  source                = "./resources/internet_gateway"
+  vpc_id                = module.vpc.vpc_id
+  vpc_name              = var.vpc_name
+  internet_gateway_name = var.internet_gateway_name
 }
 
-resource "aws_internet_gateway" "main" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "${var.vpc_name}-${var.internet_gateway_name}"
-  }
-}
-
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "${var.vpc_name}-public-route-table"
-  }
-}
-
-resource "aws_route" "public_route" {
-  route_table_id         = aws_route_table.public.id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.main.id
-}
-
-resource "aws_route_table_association" "public" {
-  for_each       = aws_subnet.public
-  subnet_id      = each.value.id
-  route_table_id = aws_route_table.public.id
-}
-
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
-
-  tags = {
-    Name = "${var.vpc_name}-private-route-table"
-  }
-}
-
-resource "aws_route_table_association" "private" {
-  for_each       = aws_subnet.private
-  subnet_id      = each.value.id
-  route_table_id = aws_route_table.private.id
+module "route_table" {
+  # Source the route table module and pass necessary variables
+  source              = "./resources/route_table"
+  vpc_id              = module.vpc.vpc_id
+  vpc_name            = var.vpc_name
+  internet_gateway_id = module.internet_gateway.internet_gateway_id
+  public_subnet_ids   = module.subnet.public_subnet_ids
+  private_subnet_ids  = module.subnet.private_subnet_ids
 }

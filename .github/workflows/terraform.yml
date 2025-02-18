@@ -11,17 +11,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Set up Terraform CLI
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
 
+      # Initialize Terraform configuration
       - name: Terraform Init
         run: terraform init
 
+      # Check Terraform files for proper formatting
       - name: Terraform Format Check
         run: terraform fmt -recursive -check
 
+      # Validate the Terraform configuration
       - name: Terraform Validate
         run: terraform validate
