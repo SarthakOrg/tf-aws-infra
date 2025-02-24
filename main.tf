@@ -17,7 +17,7 @@ provider "aws" {
 module "vpc" {
   # Source the VPC module and pass necessary variables
   source   = "./resources/vpc"
-  vpc_cidr = var.vpc_cidr
+  vpc_cidr var= var.vpc_cidr
   vpc_name = var.vpc_name
 }
 
