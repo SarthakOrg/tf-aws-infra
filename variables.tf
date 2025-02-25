@@ -20,6 +20,7 @@ variable "vpc_cidr" {
 variable "vpc_name" {
   description = "The name of the VPC"
   type        = string
+  default     = "cloud-vpc"
 }
 
 # Define the name of the Internet Gateway
@@ -44,4 +45,34 @@ variable "private_subnet_cidrs" {
 variable "availability_zones" {
   description = "A list of availability zones to use for the subnets"
   type        = list(string)
+}
+
+# Define the AMI ID for the EC2 instance
+variable "ami_id" {
+  description = "The AMI ID for the EC2 instance"
+  type        = string
+}
+
+# Define the instance type for the EC2 instance
+variable "instance_type" {
+  description = "The instance type for the EC2 instance"
+  type        = string
+}
+
+# Define the name of the EC2 instance
+variable "instance_name" {
+  description = "The name of the EC2 instance"
+  type        = string
+}
+
+# Define the description for the security group
+variable "sg_desc" {
+  description = "Description for the security group"
+  type        = string
+}
+
+# Define the application port for the security group
+variable "app_port" {
+  description = "Application port for the security group"
+  type        = number
 }

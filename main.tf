@@ -48,3 +48,20 @@ module "route_table" {
   public_subnet_ids   = module.subnet.public_subnet_ids
   private_subnet_ids  = module.subnet.private_subnet_ids
 }
+
+module "security_groups" {
+  # Source the security group module and pass necessary variables
+  source  = "./resources/security_groups"
+  sg_desc = var.sg_desc
+  vpc_id  = module.vpc.vpc_id
+}
+
+module "ec2" {
+  # Source the EC2 module and pass necessary variables
+  source             = "./resources/ec2"
+  ami_id             = var.ami_id
+  instance_type      = var.instance_type
+  instance_name      = var.instance_name
+  security_group_ids = [module.security_groups.app_sg_id]
+  subnet_id          = module.subnet.public_subnet_ids[0]
+}
