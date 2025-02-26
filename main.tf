@@ -62,6 +62,7 @@ module "ec2" {
   ami_id             = var.ami_id
   instance_type      = var.instance_type
   instance_name      = var.instance_name
+  key_name           = var.key_name
   security_group_ids = [module.security_groups.app_sg_id]
   subnet_id          = module.subnet.public_subnet_ids[0]
 }
