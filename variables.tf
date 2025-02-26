@@ -76,3 +76,9 @@ variable "app_port" {
   description = "Application port for the security group"
   type        = number
 }
+
+# Define the SSH key name for the EC2 instance
+variable "key_name" {
+  description = "SSH key name for the EC2 instance"
+  type        = string
+}
