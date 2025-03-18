@@ -1,5 +1,5 @@
 resource "aws_db_instance" "rds_instance" {
-  identifier                   = "mysql-rds-instance"
+  identifier                   = "csye6225"
   engine                       = "mysql"
   instance_class               = var.rds_instance_class
   allocated_storage            = 20
