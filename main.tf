@@ -87,18 +87,19 @@ module "policies" {
 
 # Call the IAM Roles Configuration module
 module "iam" {
-  source                              = "./resources/iam"
-  ec2_secretmanager_access_policy_arn = module.policies.ec2_secretmanager_access_policy_arn
-  ec2_s3_policy_arn                   = module.policies.ec2_s3_policy_arn
-  depends_on                          = [module.policies]
+  source            = "./resources/iam"
+  ec2_s3_policy_arn = module.policies.ec2_s3_policy_arn
+  depends_on        = [module.policies]
 }
 
 
 module "rds_instance" {
-  source                     = "./resources/rds_instance"
-  rds_instance_class         = var.rds_instance_class
-  db_family                  = var.db_family
-  rds_credentials_secret_arn = var.rds_credentials_secret_arn
-  private_subnet_ids         = module.subnet.private_subnet_ids
-  db_sg_id                   = module.security_groups.db_sg_id
+  source             = "./resources/rds_instance"
+  rds_instance_class = var.rds_instance_class
+  db_family          = var.db_family
+  private_subnet_ids = module.subnet.private_subnet_ids
+  db_sg_id           = module.security_groups.db_sg_id
+  db_name            = var.db_name
+  db_user            = var.db_user
+  db_password        = var.db_password
 }

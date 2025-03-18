@@ -21,8 +21,7 @@ resource "aws_iam_role" "ec2_s3_role" {
 
 resource "aws_iam_role_policy_attachment" "policy_attachment" {
   for_each = {
-    customEc2UserS3Policy            = var.ec2_s3_policy_arn
-    customEc2SUserecretManagerPolicy = var.ec2_secretmanager_access_policy_arn
+    customEc2UserS3Policy = var.ec2_s3_policy_arn
   }
 
   role       = aws_iam_role.ec2_s3_role.name

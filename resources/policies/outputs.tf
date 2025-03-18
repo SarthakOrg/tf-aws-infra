@@ -3,11 +3,6 @@ output "ec2_s3_policy_arn" {
   value       = aws_iam_policy.ec2_s3_policy.arn
 }
 
-output "ec2_secretmanager_access_policy_arn" {
-  description = "ARN of the custom Ec2 Secret Manager Policy."
-  value       = aws_iam_policy.ec2_secrets_policy.arn
-}
-
 output "aws_region" {
   description = "The current AWS region"
   value       = data.aws_region.current.name
