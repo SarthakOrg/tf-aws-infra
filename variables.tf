@@ -82,3 +82,35 @@ variable "key_name" {
   description = "SSH key name for the EC2 instance"
   type        = string
 }
+
+# Define the name of the S3 bucket
+variable "bucket_name" {
+  description = "The name of the S3 bucket"
+  type        = string
+  default     = ""
+}
+
+# Define the instance class for the RDS instance
+variable "rds_instance_class" {
+  description = "The instance class for the RDS instance"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+# Define the database family for the RDS instance
+variable "db_family" {
+  description = "The database family for the RDS instance"
+  type        = string
+}
+
+# Define the ARN of the AWS Secrets Manager secret for RDS credentials
+variable "rds_credentials_secret_arn" {
+  description = "The ARN of the AWS Secrets Manager secret for RDS credentials"
+  type        = string
+}
+
+variable "instance_profile_name" {
+  description = "The name of the IAM instance profile to attach to the EC2 instance"
+  type        = string
+  default     = "ec2_profile"
+}
