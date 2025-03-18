@@ -51,9 +51,10 @@ module "route_table" {
 
 module "security_groups" {
   # Source the security group module and pass necessary variables
-  source  = "./resources/security_groups"
-  sg_desc = var.sg_desc
-  vpc_id  = module.vpc.vpc_id
+  source   = "./resources/security_groups"
+  sg_desc  = var.sg_desc
+  vpc_id   = module.vpc.vpc_id
+  app_port = var.app_port
 }
 
 module "ec2" {
@@ -65,4 +66,39 @@ module "ec2" {
   key_name           = var.key_name
   security_group_ids = [module.security_groups.app_sg_id]
   subnet_id          = module.subnet.public_subnet_ids[0]
+  rds_endpoint       = module.rds_instance.rds_endpoint
+  rds_username       = module.rds_instance.rds_username
+  rds_password       = module.rds_instance.rds_password
+  rds_name           = module.rds_instance.rds_name
+  bucket_name        = module.s3_bucket.bucket_name
+}
+
+module "s3_bucket" {
+  source      = "./resources/s3_bucket"
+  bucket_name = format("%s-%s", var.bucket_name, uuid())
+}
+
+module "policies" {
+  source      = "./resources/policies"
+  bucket_name = module.s3_bucket.bucket_name
+
+  depends_on = [module.s3_bucket, module.rds_instance]
+}
+
+# Call the IAM Roles Configuration module
+module "iam" {
+  source                              = "./resources/iam"
+  ec2_secretmanager_access_policy_arn = module.policies.ec2_secretmanager_access_policy_arn
+  ec2_s3_policy_arn                   = module.policies.ec2_s3_policy_arn
+  depends_on                          = [module.policies]
+}
+
+
+module "rds_instance" {
+  source                     = "./resources/rds_instance"
+  rds_instance_class         = var.rds_instance_class
+  db_family                  = var.db_family
+  rds_credentials_secret_arn = var.rds_credentials_secret_arn
+  private_subnet_ids         = module.subnet.private_subnet_ids
+  db_sg_id                   = module.security_groups.db_sg_id
 }
