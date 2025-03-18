@@ -5,6 +5,8 @@ resource "aws_s3_bucket" "bucket" {
     prevent_destroy = false
   }
 
+  force_destroy = true
+
   tags = {
     Name = var.bucket_name
   }
