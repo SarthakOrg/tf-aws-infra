@@ -103,9 +103,21 @@ variable "db_family" {
   type        = string
 }
 
-# Define the ARN of the AWS Secrets Manager secret for RDS credentials
-variable "rds_credentials_secret_arn" {
-  description = "The ARN of the AWS Secrets Manager secret for RDS credentials"
+# Define the name of the database
+variable "db_name" {
+  description = "The name of the database"
+  type        = string
+}
+
+# Define the username for the database
+variable "db_user" {
+  description = "The username for the database"
+  type        = string
+}
+
+# Define the password for the database
+variable "db_password" {
+  description = "The password for the database"
   type        = string
 }
 

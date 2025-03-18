@@ -27,19 +27,3 @@ resource "aws_iam_policy" "ec2_s3_policy" {
     ]
   })
 }
-
-resource "aws_iam_policy" "ec2_secrets_policy" {
-  name        = "EC2SecretsManagerAccessPolicy"
-  description = "Policy to allow EC2 instances to fetch secrets from Secrets Manager"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = ["secretsmanager:GetSecretValue"]
-        Resource = "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:*"
-      }
-    ]
-  })
-}
