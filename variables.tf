@@ -126,8 +126,3 @@ variable "instance_profile_name" {
   type        = string
   default     = "ec2_profile"
 }
-
-variable "iam_policy_arn_CloudWatchAgentServerPolicy" {
-  description = "The ARN of the CloudWatch Agent Server Policy"
-  type        = string
-}
