@@ -21,9 +21,8 @@ resource "aws_iam_role" "ec2_s3_role" {
 
 resource "aws_iam_role_policy_attachment" "policy_attachment" {
   for_each = {
-    customEc2UserS3Policy         = var.ec2_s3_policy_arn
-    customCloudWatchLogPolicy     = var.iam_policy_arn_CloudWatchLogPolicy
-    customCloudWatchMetricsPolicy = var.iam_policy_arn_CloudWatchMetricsPolicy
+    customEc2UserS3Policy = var.ec2_s3_policy_arn
+    CloudWatchPolicy      = var.iam_policy_arn_CloudWatchAgentServerPolicy
   }
 
   role       = aws_iam_role.ec2_s3_role.name
