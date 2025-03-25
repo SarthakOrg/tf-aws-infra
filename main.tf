@@ -87,9 +87,10 @@ module "policies" {
 
 # Call the IAM Roles Configuration module
 module "iam" {
-  source            = "./resources/iam"
-  ec2_s3_policy_arn = module.policies.ec2_s3_policy_arn
-  depends_on        = [module.policies]
+  source                                     = "./resources/iam"
+  ec2_s3_policy_arn                          = module.policies.ec2_s3_policy_arn
+  iam_policy_arn_CloudWatchAgentServerPolicy = var.iam_policy_arn_CloudWatchAgentServerPolicy
+  depends_on                                 = [module.policies]
 }
 
 
