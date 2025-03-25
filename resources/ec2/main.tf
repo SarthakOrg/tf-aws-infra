@@ -22,7 +22,8 @@ resource "aws_instance" "app" {
               echo "DB_PASSWORD=${var.rds_password}" >> /opt/csye6225/webapp/.env
               echo "DB_NAME=${var.rds_name}" >> /opt/csye6225/webapp/.env
               echo "AWS_REGION=${var.aws_region}" >> /opt/csye6225/webapp/.env
-              echo "S3_BUCKET_NAME=${var.bucket_name}" >> /opt/csye6225/webapp/.env              
+              echo "S3_BUCKET_NAME=${var.bucket_name}" >> /opt/csye6225/webapp/.env   
+              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/cloudwatch-agent-config.json -s           
               EOF  
 
   tags = {
