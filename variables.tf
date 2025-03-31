@@ -126,3 +126,18 @@ variable "instance_profile_name" {
   type        = string
   default     = "ec2_profile"
 }
+
+variable "domain_name" {
+  description = "The domain name for Route 53"
+  type        = string
+}
+
+variable "cpu_threshold_high" {
+  description = "The CPU utilization threshold for scaling up"
+  type        = number
+}
+
+variable "cpu_threshold_low" {
+  description = "The CPU utilization threshold for scaling down"
+  type        = number
+}
