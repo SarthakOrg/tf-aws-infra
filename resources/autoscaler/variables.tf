@@ -72,3 +72,18 @@ variable "target_group_arns" {
   description = "The ARN of the target group for the load balancer"
   type        = list(string)
 }
+
+variable "min_size" {
+  description = "The minimum size of the Auto Scaling group"
+  type        = number
+}
+
+variable "max_size" {
+  description = "The maximum size of the Auto Scaling group"
+  type        = number
+}
+
+variable "desired_capacity" {
+  description = "The desired capacity of the Auto Scaling group"
+  type        = number
+}

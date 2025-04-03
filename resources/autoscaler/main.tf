@@ -25,7 +25,7 @@ resource "aws_launch_template" "webapp_lt" {
               echo "DB_NAME=${var.rds_name}" >> /opt/csye6225/webapp/.env
               echo "AWS_REGION=${var.aws_region}" >> /opt/csye6225/webapp/.env
               echo "S3_BUCKET_NAME=${var.bucket_name}" >> /opt/csye6225/webapp/.env   
-              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/cloudwatch-agent-config.json -s           
+              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/cloudwatch-agent-config.json -s
               EOF
   )
 }
@@ -36,9 +36,9 @@ resource "aws_autoscaling_group" "webapp_asg" {
     version = "$Latest"
   }
 
-  min_size            = 1
-  max_size            = 3
-  desired_capacity    = 1
+  min_size            = var.min_size
+  max_size            = var.max_size
+  desired_capacity    = var.desired_capacity
   vpc_zone_identifier = var.public_subnet_ids
   target_group_arns   = var.target_group_arns
 

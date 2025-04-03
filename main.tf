@@ -92,8 +92,11 @@ module "autoscaler" {
   rds_name                      = module.rds_instance.rds_name
   bucket_name                   = module.s3_bucket.bucket_name
   aws_region                    = var.aws_region
-  cpu_threshold_high            = var.cpu_threshold_high # CPU threshold for scaling up
-  cpu_threshold_low             = var.cpu_threshold_low  # CPU threshold for scaling down
+  cpu_threshold_high            = var.cpu_threshold_high
+  cpu_threshold_low             = var.cpu_threshold_low
+  min_size                      = var.min_size
+  max_size                      = var.max_size
+  desired_capacity              = var.desired_capacity
 }
 
 module "s3_bucket" {

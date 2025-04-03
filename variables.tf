@@ -141,3 +141,18 @@ variable "cpu_threshold_low" {
   description = "The CPU utilization threshold for scaling down"
   type        = number
 }
+
+variable "min_size" {
+  description = "The minimum size of the Auto Scaling group"
+  type        = number
+}
+
+variable "max_size" {
+  description = "The maximum size of the Auto Scaling group"
+  type        = number
+}
+
+variable "desired_capacity" {
+  description = "The desired capacity of the Auto Scaling group"
+  type        = number
+}
