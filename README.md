@@ -60,3 +60,8 @@ tf-aws-infra/
     ```sh
     terraform apply
     ```
+
+## SSL Certificate
+- Run the below command on terminal to import certificate.
+
+`aws acm import-certificate --certificate file://C:/Users/Sarthak/Downloads/demo_sarthakdeshmukh_me.crt --certificate-chain file://C:/Users/Sarthak/Downloads/demo_sarthakdeshmukh_me.ca-bundle --private-key file://C:/Users/Sarthak/.ssh/demo.sarthakdeshmukh.me.key`

@@ -18,6 +18,11 @@ data "aws_route53_zone" "selected" {
   name = var.domain_name
 }
 
+data "aws_acm_certificate" "issued" {
+  domain   = var.domain_name
+  statuses = ["ISSUED"]
+}
+
 module "vpc" {
   # Source the VPC module and pass necessary variables
   source   = "./resources/vpc"
@@ -88,7 +93,7 @@ module "autoscaler" {
   public_subnet_ids             = module.subnet.public_subnet_ids
   rds_endpoint                  = module.rds_instance.rds_endpoint
   rds_username                  = module.rds_instance.rds_username
-  rds_password                  = module.rds_instance.rds_password
+  rds_password_secret_name      = module.rds_instance.rds_password_secret_name
   rds_name                      = module.rds_instance.rds_name
   bucket_name                   = module.s3_bucket.bucket_name
   aws_region                    = var.aws_region
@@ -97,36 +102,43 @@ module "autoscaler" {
   min_size                      = var.min_size
   max_size                      = var.max_size
   desired_capacity              = var.desired_capacity
+  secrets_manager_kms_key_arn   = module.kms.secrets_manager_kms_key_arn
+  ec2_kms_key_arn               = module.kms.ec2_kms_key_arn
 }
 
 module "s3_bucket" {
-  source      = "./resources/s3_bucket"
-  bucket_name = format("%s-%s", var.bucket_name, uuid())
+  source         = "./resources/s3_bucket"
+  bucket_name    = format("%s-%s", var.bucket_name, uuid())
+  s3_kms_key_arn = module.kms.s3_kms_key_arn
 }
 
 module "policies" {
-  source      = "./resources/policies"
-  bucket_name = module.s3_bucket.bucket_name
-
-  depends_on = [module.s3_bucket, module.rds_instance]
+  source                      = "./resources/policies"
+  bucket_name                 = module.s3_bucket.bucket_name
+  rds_password_secret_arn     = module.rds_instance.rds_password_secret_arn
+  secrets_manager_kms_key_arn = module.kms.secrets_manager_kms_key_arn
+  s3_kms_key_arn              = module.kms.s3_kms_key_arn
+  depends_on                  = [module.s3_bucket, module.rds_instance]
 }
 
 # Call the IAM Roles Configuration module
 module "iam" {
-  source            = "./resources/iam"
-  ec2_s3_policy_arn = module.policies.ec2_s3_policy_arn
-  depends_on        = [module.policies]
+  source                 = "./resources/iam"
+  ec2_s3_policy_arn      = module.policies.ec2_s3_policy_arn
+  ec2_secrets_policy_arn = module.policies.ec2_secrets_policy_arn
+  depends_on             = [module.policies]
 }
 
 module "rds_instance" {
-  source             = "./resources/rds_instance"
-  rds_instance_class = var.rds_instance_class
-  db_family          = var.db_family
-  private_subnet_ids = module.subnet.private_subnet_ids
-  db_sg_id           = module.security_groups.db_sg_id
-  db_name            = var.db_name
-  db_user            = var.db_user
-  db_password        = var.db_password
+  source                      = "./resources/rds_instance"
+  rds_instance_class          = var.rds_instance_class
+  db_family                   = var.db_family
+  private_subnet_ids          = module.subnet.private_subnet_ids
+  db_sg_id                    = module.security_groups.db_sg_id
+  db_name                     = var.db_name
+  db_user                     = var.db_user
+  rds_kms_key_arn             = module.kms.rds_kms_key_arn
+  secrets_manager_kms_key_arn = module.kms.secrets_manager_kms_key_arn
 }
 
 module "load_balancer" {
@@ -136,8 +148,8 @@ module "load_balancer" {
   vpc_id                 = module.vpc.vpc_id
   autoscaling_group_name = module.autoscaler.autoscaling_group_name
   app_port               = var.app_port
-
-  depends_on = [module.vpc, module.subnet, module.security_groups]
+  ssl_certificate_arn    = data.aws_acm_certificate.issued.arn
+  depends_on             = [module.vpc, module.subnet, module.security_groups]
 }
 
 module "route53" {
@@ -148,4 +160,9 @@ module "route53" {
   elb_zone_id  = module.load_balancer.elb_zone_id
 
   depends_on = [module.load_balancer]
+}
+
+module "kms" {
+  source      = "./resources/kms"
+  aws_profile = var.aws_profile
 }

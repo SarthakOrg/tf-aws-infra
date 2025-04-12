@@ -34,7 +34,13 @@ variable "db_user" {
   type        = string
 }
 
-variable "db_password" {
-  description = "The password for the database"
+variable "rds_kms_key_arn" {
+  description = "The ARN of the KMS key for RDS"
+  type        = string
+  default     = ""
+}
+
+variable "secrets_manager_kms_key_arn" {
+  description = "The ARN of the KMS key for Secrets Manager"
   type        = string
 }

@@ -115,12 +115,6 @@ variable "db_user" {
   type        = string
 }
 
-# Define the password for the database
-variable "db_password" {
-  description = "The password for the database"
-  type        = string
-}
-
 variable "instance_profile_name" {
   description = "The name of the IAM instance profile to attach to the EC2 instance"
   type        = string
