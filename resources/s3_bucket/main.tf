@@ -16,7 +16,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encrypt" {
   bucket = aws_s3_bucket.bucket.id
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = var.s3_kms_key_arn
     }
   }
 }
@@ -41,4 +42,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "my_bucket_lifecycle" {
       storage_class = "STANDARD_IA"
     }
   }
+}
+
+variable "s3_kms_key_arn" {
+  description = "The ARN of the KMS key for S3"
+  type        = string
 }

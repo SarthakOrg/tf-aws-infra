@@ -38,11 +38,6 @@ variable "rds_username" {
   type        = string
 }
 
-variable "rds_password" {
-  description = "The password for the RDS instance"
-  type        = string
-}
-
 variable "rds_name" {
   description = "The name of the RDS database"
   type        = string
@@ -86,4 +81,19 @@ variable "max_size" {
 variable "desired_capacity" {
   description = "The desired capacity of the Auto Scaling group"
   type        = number
+}
+
+variable "rds_password_secret_name" {
+  description = "The name of the RDS password secret in Secrets Manager"
+  type        = string
+}
+
+variable "secrets_manager_kms_key_arn" {
+  description = "The ARN of the KMS key for Secrets Manager"
+  type        = string
+}
+
+variable "ec2_kms_key_arn" {
+  description = "The ARN of the KMS key for EC2 encryption"
+  type        = string
 }

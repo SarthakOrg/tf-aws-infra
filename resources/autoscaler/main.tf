@@ -21,16 +21,30 @@ resource "aws_launch_template" "webapp_lt" {
               sudo cat .env
               echo "DB_HOST=${replace(var.rds_endpoint, ":3306", "")}" >> /opt/csye6225/webapp/.env
               echo "DB_USER=${var.rds_username}" >> /opt/csye6225/webapp/.env
-              echo "DB_PASSWORD=${var.rds_password}" >> /opt/csye6225/webapp/.env
+              echo "DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ${var.rds_password_secret_name} --query SecretString --output text | jq -r '.password')" >> /opt/csye6225/webapp/.env
               echo "DB_NAME=${var.rds_name}" >> /opt/csye6225/webapp/.env
               echo "AWS_REGION=${var.aws_region}" >> /opt/csye6225/webapp/.env
               echo "S3_BUCKET_NAME=${var.bucket_name}" >> /opt/csye6225/webapp/.env   
               sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/cloudwatch-agent-config.json -s
+              sudo systemctl daemon-reload
+              sudo systemctl restart webapp.service
               EOF
   )
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size           = 30
+      volume_type           = "gp2"
+      kms_key_id            = var.ec2_kms_key_arn
+      encrypted             = true
+      delete_on_termination = true
+    }
+  }
 }
 
 resource "aws_autoscaling_group" "webapp_asg" {
+  name = "webapp-asg"
   launch_template {
     id      = aws_launch_template.webapp_lt.id
     version = "$Latest"

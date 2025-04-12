@@ -35,8 +35,9 @@ resource "aws_lb_target_group" "webapp_tg" {
 
 resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = aws_lb.webapp_lb.arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = var.ssl_certificate_arn
   depends_on        = [aws_lb.webapp_lb]
 
   default_action {
